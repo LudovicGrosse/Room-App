@@ -3,6 +3,7 @@ package com.example.lg346.myapplication;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ViewDebug;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -59,13 +60,30 @@ public class Activity1 extends AppCompatActivity {
                                 // Retrieves the string labeled "colorName" and "hexValue",
                                 // and converts them into javascript objects
                                 String type = !jsonObject.isNull("type") ? jsonObject.getString("type"): "";
-                                String id = !jsonObject.isNull("id") ? jsonObject.getString("id"): "";
+                                data += (type.equals("RESTAURANT")) ? "1" : "0";
+                                if (type.equals("RESTAURANT") || type.equals("POI")  || type.equals("CITY")  || type.equals("GOELOC")) {
+                                    String display = !jsonObject.isNull("display") ? jsonObject.getString("display") : "";
+                                    String media = !jsonObject.isNull("media") ? jsonObject.getString("media") : "";
+                                    String stars = !jsonObject.isNull("stars") ? jsonObject.getString("stars") : "";
+                                    String city = !jsonObject.isNull("city") ? jsonObject.getString("city") : "";
+                                    String id = !jsonObject.isNull("id") ? jsonObject.getString("id") : "";
+                                    String country = !jsonObject.isNull("country") ? jsonObject.getString("country") : "";
+                                    String sort = !jsonObject.isNull("sort") ? jsonObject.getString("sort") : "";
+                                    String distance = !jsonObject.isNull("distance") ? jsonObject.getString("distance") : "";
+                                    String visit_duration = !jsonObject.isNull("visit_duration") ? jsonObject.getString("visit_duration") : "";
 
-                                // Adds strings from the current object to the data string
-                                //spacing is included at the end to separate the results from
-                                //one another
-                                data += "Data " + (i + 1) + ": [ Type : " + type +
-                                        ", ID : " + id + "] --- "; }
+                                    data += "- Data " + (i + 1) + ": [ Type : " + type +
+                                            ", Display : " + display +
+                                            ", Media : " + media +
+                                            ", Stars : " + stars +
+                                            ", City : " + city +
+                                            ", ID : " + id +
+                                            ", Country : " + country +
+                                            ", Sort : " + sort +
+                                            ", Distance : " + distance +
+                                            ", Duration : " + visit_duration + "]\n\n";
+                                }
+                            }
                             // Adds the data string to the TextView "results"
                             results.setText(data);
                         }
