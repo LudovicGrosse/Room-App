@@ -70,24 +70,24 @@ public class DestinationActivity extends AppCompatActivity {
                                     String display = !jsonObject.isNull("display") ? jsonObject.getString("display") : "";
                                     String media = !jsonObject.isNull("media") ? jsonObject.getString("media") : "";
 
+                                    double lat, longi ;
+
                                     if ( !jsonObject.isNull("location")){
                                         JSONObject loc = jsonObject.getJSONObject("location");
                                         JSONObject coords = loc.getJSONObject("coords");
-                                        Double lat = Double.parseDouble(coords.getString("lat"));
-                                        Double longi =Double.parseDouble(coords.getString("lon"));
+                                        lat = Double.parseDouble(coords.getString("lat"));
+                                        longi =Double.parseDouble(coords.getString("lon"));
                                     }
                                     else {
-                                        double lat = 0;
-                                        double longi = 0;
+                                        lat = 0;
+                                        longi = 0;
                                     }
 
-                                    Double lat = !jsonObject.isNull("lat") ? Double.parseDouble(jsonObject.getString("lat")) : 0;
-                                    Double longi = !jsonObject.isNull("lon") ? Double.parseDouble(jsonObject.getString("lon")) : 0;
+                                    //Double lat = !jsonObject.isNull("lat") ? Double.parseDouble(jsonObject.getString("lat")) : 0;
+                                    //Double longi = !jsonObject.isNull("lon") ? Double.parseDouble(jsonObject.getString("lon")) : 0;
 
                                     DestinationClass dest = new DestinationClass(type,display,media,lat,longi);
-
-                                    Log.d("LAT", Double.toString(lat));
-                                    Log.d("LONG", Double.toString(longi));
+                                    
                                     listDest.add(dest);
                                 }
                             }
