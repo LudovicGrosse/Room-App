@@ -2,6 +2,8 @@ package com.example.lg346.myapplication;
 
 import android.util.Log;
 
+import java.util.Comparator;
+
 public class DestinationClass {
     private String type, title, media; // type, display, media = type, titre, image
 
@@ -83,17 +85,28 @@ public class DestinationClass {
         this.longitudeDest = longitudeDest;
     }
 
-    public double calculDistance(){
-        double latitude2 = latitudeTel*Math.PI / 180;
-        double longitude2 = longitudeTel*Math.PI / 180;
-        double myLongitude2 = longitudeDest * Math.PI / 180;
-        double myLatitude2 = latitudeDest* Math.PI / 180;
-
+    public void calculDistance(){
+        double lat1 = latitudeTel*Math.PI / 180;
+        double lon1 = longitudeTel*Math.PI / 180;
+        double lon2 = longitudeDest * Math.PI / 180;
+        double lat2 = latitudeDest* Math.PI / 180;
         double R = 6371 ;
-        distance = R * Math.acos(Math.cos(latitude2) * Math.cos(myLatitude2) *
-                Math.cos(longitude2 - myLongitude2) + Math.sin(latitude2) *
-                Math.sin(myLatitude2));
-        return distance ;
+        distance = R * Math.acos(Math.cos(lat1) * Math.cos(lat2) *
+                Math.cos(lon1 - lon2) + Math.sin(lat1) *
+                Math.sin(lat2));
+        // arrondi a 2 chiffres apres la virgule
+        distance = distance * 100;
+        int d = (int) distance ;
+        distance = (double) d;
+        distance = distance / 100 ;
+    }
+}
+
+class SortDestClass implements Comparator<DestinationClass>
+{
+    public int compare(DestinationClass a, DestinationClass b)
+    {
+        return a.getDistance() > b.getDistance() ? 1 : -1;
     }
 }
 

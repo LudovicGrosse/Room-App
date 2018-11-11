@@ -17,6 +17,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class DestinationActivity extends AppCompatActivity {
@@ -83,14 +85,13 @@ public class DestinationActivity extends AppCompatActivity {
                                         longi = 0;
                                     }
 
-                                    //Double lat = !jsonObject.isNull("lat") ? Double.parseDouble(jsonObject.getString("lat")) : 0;
-                                    //Double longi = !jsonObject.isNull("lon") ? Double.parseDouble(jsonObject.getString("lon")) : 0;
-
                                     DestinationClass dest = new DestinationClass(type,display,media,lat,longi);
-                                    
                                     listDest.add(dest);
                                 }
                             }
+                            // Tri selon la distance
+                            Collections.sort(listDest, new SortDestClass());
+
                             // Adds the data string to the TextView "results"
                             DestinationAdaptater adapter = new DestinationAdaptater(getApplicationContext(), listDest);
                             results.setAdapter(adapter);

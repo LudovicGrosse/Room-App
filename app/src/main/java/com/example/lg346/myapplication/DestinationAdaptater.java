@@ -51,7 +51,9 @@ public class DestinationAdaptater extends BaseAdapter {
         DestinationClass dest = listDest.get(position);
         holder.Tvtitre.setText(dest.getType());
         holder.Tvlieu.setText(dest.getTitle());
-        holder.Tvdistance.setText(Double.toString(dest.getDistance()));
+        String distString = (dest.getLatitudeDest() == 0 && dest.getLongitudeDest() == 0)?
+                "Distance inconnue" : Double.toString(dest.getDistance()) + " km";
+        holder.Tvdistance.setText(distString);
         return convertView;
     }
 
