@@ -8,7 +8,6 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -37,8 +36,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CHECK_SETTINGS = 920;
     private FusedLocationProviderClient fusedLocationProviderClient;
-    public Destination dest = new Destination("","","",40.7808, -73.9772);
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent activity1 = new Intent(getApplicationContext(), Activity1.class);
+                Intent activity1 = new Intent(getApplicationContext(), DestinationActivity.class);
                 startActivity(activity1);
             }
         });
@@ -94,8 +91,9 @@ public class MainActivity extends AppCompatActivity {
                     // Display the current location on the device screen
                     double Latitude = location.getLatitude();
                     double Longitude = location.getLongitude();
-                    dest.calculDistance(Latitude,Longitude);
-                    Toast.makeText(MainActivity.this, "Distance : " + dest.getDistance(), Toast.LENGTH_SHORT).show();
+                    DestinationClass.setLongitudeTel(Longitude);
+                    DestinationClass.setLatitudeTel(Latitude);
+
                 } else {
                     Toast.makeText(MainActivity.this, "Cannot get user current location at the moment", Toast.LENGTH_SHORT).show();
                 }

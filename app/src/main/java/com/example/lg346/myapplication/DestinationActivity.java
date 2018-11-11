@@ -3,6 +3,7 @@ package com.example.lg346.myapplication;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -15,15 +16,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DestinationActivity extends AppCompatActivity {
     // Will show the string "data" that holds the results
-    TextView results;
+    ListView results;
     // URL of object to be parsed
     String JsonURL = "http://voyage2.corellis.eu/api/v2/homev2?lat=43.14554197717751&lon=6.00246207789145&offset=0";
     // This string will hold the results
-    String data = "";
+    // String data = "";
+
     // Defining the Volley request queue that handles the URL request concurrently
     RequestQueue requestQueue;
+
+    List<DestinationClass> listDest = new ArrayList<DestinationClass>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +39,8 @@ public class DestinationActivity extends AppCompatActivity {
         // Creates the Volley request queue
         requestQueue = Volley.newRequestQueue(this);
 
-        // Casts results into the TextView found within the main layout XML with id jsonData
-        results = (TextView) findViewById(R.id.jsonData);
+        // Casts results into the ListView found within the main layout XML with id jsonData
+        results = (ListView) findViewById(R.id.jsonData);
         JSONObject jsonObj = new JSONObject();
 
         // Creating the JsonArrayRequest class called arrayreq, passing the required parameters
@@ -55,36 +62,40 @@ public class DestinationActivity extends AppCompatActivity {
                             for (int i = 0; i < tab.length(); i++) {
                                 //gets each JSON object within the JSON array
                                 JSONObject jsonObject = tab.getJSONObject(i);
-
                                 // Retrieves the string labeled "colorName" and "hexValue",
                                 // and converts them into javascript objects
                                 String type = !jsonObject.isNull("type") ? jsonObject.getString("type"): "";
-                                data += (type.equals("RESTAURANT")) ? "1" : "0";
                                 if (type.equals("RESTAURANT") || type.equals("POI")  || type.equals("CITY")  || type.equals("GOELOC")) {
-                                    /*String display = !jsonObject.isNull("display") ? jsonObject.getString("display") : "";
+                                    Log.d("TEST1", Integer.toString(i));
+                                    String display = !jsonObject.isNull("display") ? jsonObject.getString("display") : "";
                                     String media = !jsonObject.isNull("media") ? jsonObject.getString("media") : "";
-                                    String stars = !jsonObject.isNull("stars") ? jsonObject.getString("stars") : "";
-                                    String city = !jsonObject.isNull("city") ? jsonObject.getString("city") : "";
-                                    String id = !jsonObject.isNull("id") ? jsonObject.getString("id") : "";
-                                    String country = !jsonObject.isNull("country") ? jsonObject.getString("country") : "";
-                                    String sort = !jsonObject.isNull("sort") ? jsonObject.getString("sort") : "";
-                                    String distance = !jsonObject.isNull("distance") ? jsonObject.getString("distance") : "";
-                                    String visit_duration = !jsonObject.isNull("visit_duration") ? jsonObject.getString("visit_duration") : "";
 
-                                    data += "- Data " + (i + 1) + ": [ Type : " + type +
-                                            ", Display : " + display +
-                                            ", Media : " + media +
-                                            ", Stars : " + stars +
-                                            ", City : " + city +
-                                            ", ID : " + id +
-                                            ", Country : " + country +
-                                            ", Sort : " + sort +
-                                            ", Distance : " + distance +
-                                            ", Duration : " + visit_duration + "]\n\n";*/
+                                    if ( !jsonObject.isNull("location")){
+                                        JSONObject loc = jsonObject.getJSONObject("location");
+                                        JSONObject coords = loc.getJSONObject("coords");
+                                        Double lat = Double.parseDouble(coords.getString("lat"));
+                                        Double longi =Double.parseDouble(coords.getString("lon"));
+                                    }
+                                    else {
+                                        double lat = 0;
+                                        double longi = 0;
+                                    }
+
+                                    Double lat = !jsonObject.isNull("lat") ? Double.parseDouble(jsonObject.getString("lat")) : 0;
+                                    Double longi = !jsonObject.isNull("lon") ? Double.parseDouble(jsonObject.getString("lon")) : 0;
+
+                                    DestinationClass dest = new DestinationClass(type,display,media,lat,longi);
+
+                                    Log.d("LAT", Double.toString(lat));
+                                    Log.d("LONG", Double.toString(longi));
+                                    listDest.add(dest);
                                 }
                             }
                             // Adds the data string to the TextView "results"
-                            results.setText(data);
+                            DestinationAdaptater adapter = new DestinationAdaptater(getApplicationContext(), listDest);
+                            results.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+
                         }
                         // Try and catch are included to handle any errors due to JSON
                         catch (JSONException e) {
