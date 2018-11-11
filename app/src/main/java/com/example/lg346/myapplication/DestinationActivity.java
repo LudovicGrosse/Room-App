@@ -3,7 +3,6 @@ package com.example.lg346.myapplication;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ViewDebug;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -16,7 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Activity1 extends AppCompatActivity {
+public class DestinationActivity extends AppCompatActivity {
     // Will show the string "data" that holds the results
     TextView results;
     // URL of object to be parsed
@@ -29,7 +28,7 @@ public class Activity1 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_1);
+        setContentView(R.layout.activity_destination);
         // Creates the Volley request queue
         requestQueue = Volley.newRequestQueue(this);
 
@@ -62,7 +61,7 @@ public class Activity1 extends AppCompatActivity {
                                 String type = !jsonObject.isNull("type") ? jsonObject.getString("type"): "";
                                 data += (type.equals("RESTAURANT")) ? "1" : "0";
                                 if (type.equals("RESTAURANT") || type.equals("POI")  || type.equals("CITY")  || type.equals("GOELOC")) {
-                                    String display = !jsonObject.isNull("display") ? jsonObject.getString("display") : "";
+                                    /*String display = !jsonObject.isNull("display") ? jsonObject.getString("display") : "";
                                     String media = !jsonObject.isNull("media") ? jsonObject.getString("media") : "";
                                     String stars = !jsonObject.isNull("stars") ? jsonObject.getString("stars") : "";
                                     String city = !jsonObject.isNull("city") ? jsonObject.getString("city") : "";
@@ -81,7 +80,7 @@ public class Activity1 extends AppCompatActivity {
                                             ", Country : " + country +
                                             ", Sort : " + sort +
                                             ", Distance : " + distance +
-                                            ", Duration : " + visit_duration + "]\n\n";
+                                            ", Duration : " + visit_duration + "]\n\n";*/
                                 }
                             }
                             // Adds the data string to the TextView "results"
