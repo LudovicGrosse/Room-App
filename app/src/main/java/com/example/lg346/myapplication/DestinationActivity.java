@@ -1,14 +1,17 @@
+
+
 package com.example.lg346.myapplication;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
-import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -17,17 +20,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DestinationActivity extends AppCompatActivity {
     // Will show the string "data" that holds the results
     ListView results;
     // URL of object to be parsed
-    String JsonURL = "http://voyage2.corellis.eu/api/v2/homev2?lat=43.14554197717751&lon=6.00246207789145&offset=0";
+    String JsonURL = "https://jsonbin.org/ludovicgrosse/blog";
+
     // This string will hold the results
-    // String data = "";
+    String data;
 
     // Defining the Volley request queue that handles the URL request concurrently
     RequestQueue requestQueue;
@@ -36,61 +40,45 @@ public class DestinationActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_destination);
-        // Creates the Volley request queue
-        requestQueue = Volley.newRequestQueue(this);
+
 
         // Casts results into the ListView found within the main layout XML with id jsonData
         results = (ListView) findViewById(R.id.jsonData);
         JSONObject jsonObj = new JSONObject();
 
         // Creating the JsonArrayRequest class called arrayreq, passing the required parameters
-        //JsonURL is the URL to be fetched from
-        JsonObjectRequest arrayobj = new JsonObjectRequest(JsonURL,jsonObj,
-                // The second parameter Listener overrides the method onResponse() and passes
-                //JSONArray as a parameter
+        // JsonURL is the URL to be fetched from
+        JsonObjectRequest arrayobj = new JsonObjectRequest(0, JsonURL,jsonObj,
+
                 new Response.Listener<JSONObject>() {
 
                     // Takes the response from the JSON request
                     @Override
                     public void onResponse(JSONObject response) {
+                        Log.v("Volley", "12345");
+                        String room;
+                        String etat;
+
                         try {
-                            // Retrieves first JSON object in outer array
-                            // Retrieves "colorArray" from the JSON object
+
                             JSONArray tab = response.getJSONArray("data");
-                            // Iterates through the JSON Array getting objects and adding them
-                            //to the list view until there are no more objects in colorArray
+
                             for (int i = 0; i < tab.length(); i++) {
+
                                 //gets each JSON object within the JSON array
                                 JSONObject jsonObject = tab.getJSONObject(i);
-                                // Retrieves the string labeled "colorName" and "hexValue",
-                                // and converts them into javascript objects
-                                String type = !jsonObject.isNull("type") ? jsonObject.getString("type"): "";
-                                if (type.equals("RESTAURANT") || type.equals("POI")  || type.equals("CITY")  || type.equals("GOELOC")) {
-                                    Log.d("TEST1", Integer.toString(i));
-                                    String display = !jsonObject.isNull("display") ? jsonObject.getString("display") : "";
-                                    String media = !jsonObject.isNull("media") ? jsonObject.getString("media") : "";
 
-                                    double lat, longi ;
+                                room = !jsonObject.isNull("room") ? jsonObject.getString("room") : "";
+                                etat = !jsonObject.isNull("etat") ? jsonObject.getString("etat") : "";
 
-                                    if ( !jsonObject.isNull("location")){
-                                        JSONObject loc = jsonObject.getJSONObject("location");
-                                        JSONObject coords = loc.getJSONObject("coords");
-                                        lat = Double.parseDouble(coords.getString("lat"));
-                                        longi =Double.parseDouble(coords.getString("lon"));
-                                    }
-                                    else {
-                                        lat = 0;
-                                        longi = 0;
-                                    }
-
-                                    DestinationClass dest = new DestinationClass(type,display,media,lat,longi);
-                                    listDest.add(dest);
-                                }
+                                DestinationClass dest = new DestinationClass(room, etat);
+                                listDest.add(dest);
+                                Log.d("ROOM :",": "+ room);
+                                Log.d("ETAT :",": "+ etat);
                             }
-                            // Tri selon la distance
-                            Collections.sort(listDest, new SortDestClass());
 
                             // Adds the data string to the TextView "results"
                             DestinationAdaptater adapter = new DestinationAdaptater(getApplicationContext(), listDest);
@@ -102,22 +90,30 @@ public class DestinationActivity extends AppCompatActivity {
                         catch (JSONException e) {
                             // If an error occurs, this prints the error to the log
 
-                            Log.d("TEST :", "aaaa"+e.toString());
+                            Log.d("JSONException :", e.toString());
                             e.printStackTrace();
                         }
                     }
                 },
                 // The final parameter overrides the method onErrorResponse() and passes VolleyError
                 //as a parameter
-                new Response.ErrorListener() {
+                new Response.ErrorListener()
+                {
                     @Override
                     // Handles errors that occur due to Volley
                     public void onErrorResponse(VolleyError error) {
                         Log.e("Volley", "Error");
                     }
-                }
-        );
-        // Adds the JSON array request "arrayreq" to the request queue
-        requestQueue.add(arrayobj);
-    }
-}
+                })
+        {
+            @Override
+            public Map getHeaders() throws AuthFailureError {
+                HashMap headers = new HashMap();
+                headers.put("Content-Type", "application/json");
+                headers.put("authorization", "token a76c3bbc-c413-4085-8902-5ecff2e7d775");
+                return headers;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        arrayobj.setTag("headerRequest");;
+        requestQueue.add(arrayobj);}}

@@ -8,47 +8,32 @@
     tools:context=".DestinationActivity">
 
     <TextView
-        android:id="@+id/titre"
-        android:layout_width="178dp"
-        android:layout_height="33dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Titre :"
+        android:id="@+id/room"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="40dp"
+        android:text="Salle :"
+        android:textColor="#15466D"
+        android:textSize="36sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Titre :" />
+        tools:text="Salle :" />
 
-    <TextView
-        android:id="@+id/lieu"
-        android:layout_width="175dp"
-        android:layout_height="27dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:text="Lieu :"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titre"
-        tools:text="Lieu :" />
-
-    <TextView
-        android:id="@+id/distance"
-        android:layout_width="177dp"
-        android:layout_height="28dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:text="Distance : "
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lieu"
-        tools:text="Distance : " />
     <ImageView
-        android:src="@mipmap/ic_launcher"
-        android:layout_width="172dp"
-        android:layout_height="126dp" tools:layout_editor_absoluteY="0dp"
-        android:id="@+id/img" app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/lieu"
-        android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
-        app:layout_constraintHorizontal_bias="1.0"
+        android:id="@+id/img"
+        android:layout_width="50dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="52dp"
+        android:layout_marginRight="52dp"
+        android:src="@drawable/green_dot"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.889"
+        app:layout_constraintStart_toEndOf="@+id/etat"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 </android.support.constraint.ConstraintLayout>
