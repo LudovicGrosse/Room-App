@@ -21,7 +21,6 @@ public class DestinationAdaptater extends BaseAdapter {
 
     private class ViewHolder {
         TextView Tvroom;
-        TextView Tvetat;
         ImageView Ivetat;
     }
     public DestinationAdaptater(Context context, List<DestinationClass> objects) {
@@ -39,7 +38,6 @@ public class DestinationAdaptater extends BaseAdapter {
             holder = new ViewHolder();
             convertView = inflater.inflate(R.layout.activity_destination_listview, null);
             holder.Tvroom = convertView.findViewById(R.id.room);
-            holder.Tvetat = convertView.findViewById(R.id.etat);
             holder.Ivetat = convertView.findViewById(R.id.img);
             convertView.setTag(holder);
         } else {
@@ -48,7 +46,6 @@ public class DestinationAdaptater extends BaseAdapter {
         }
         DestinationClass dest = listDest.get(position);
         holder.Tvroom.setText(dest.getRoom());
-        holder.Tvetat.setText(dest.getEtat());
         holder.Ivetat.setImageResource(dest.getImage());
 
         return convertView;

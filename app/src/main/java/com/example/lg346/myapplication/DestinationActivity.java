@@ -66,6 +66,9 @@ public class DestinationActivity extends AppCompatActivity {
 
                             JSONArray tab = response.getJSONArray("data");
 
+                            // Affichage des données JSON
+                            Log.d("Tableau JSON : ", tab.toString());
+
                             for (int i = 0; i < tab.length(); i++) {
 
                                 //gets each JSON object within the JSON array
