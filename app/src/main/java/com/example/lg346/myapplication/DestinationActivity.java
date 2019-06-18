@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.ListView;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -24,11 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*
+
 public class DestinationActivity extends AppCompatActivity {
     // Will show the string "data" that holds the results
     ListView results;
     // URL of object to be parsed
-    String JsonURL = "https://jsonbin.org/ludovicgrosse/blog";
+    String JsonURL = "https://galerie-elise.com:8080/api/devices?limit=99";
 
     // This string will hold the results
     String data;
@@ -51,7 +54,7 @@ public class DestinationActivity extends AppCompatActivity {
 
         // Creating the JsonArrayRequest class called arrayreq, passing the required parameters
         // JsonURL is the URL to be fetched from
-        JsonObjectRequest arrayobj = new JsonObjectRequest(0, JsonURL,jsonObj,
+        JsonObjectRequest arrayobj = new JsonObjectRequest(0,JsonURL,jsonObj,
 
                 new Response.Listener<JSONObject>() {
 
@@ -64,7 +67,7 @@ public class DestinationActivity extends AppCompatActivity {
 
                         try {
 
-                            JSONArray tab = response.getJSONArray("data");
+                            JSONArray tab = response.getJSONArray("result");
 
                             // Affichage des données JSON
                             Log.d("Tableau JSON : ", tab.toString());
@@ -112,11 +115,60 @@ public class DestinationActivity extends AppCompatActivity {
             @Override
             public Map getHeaders() throws AuthFailureError {
                 HashMap headers = new HashMap();
-                headers.put("Content-Type", "application/json");
-                headers.put("authorization", "token a76c3bbc-c413-4085-8902-5ecff2e7d775");
+                //headers.put("Accept", "application/json");
+                //headers.put("Grpc-Metadata-Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJsb3JhLWFwcC1zZXJ2ZXIiLCJleHAiOjE1NjA4NjA0MzUsImlzcyI6ImxvcmEtYXBwLXNlcnZlciIsIm5iZiI6MTU2MDc3NDAzNSwic3ViIjoidXNlciIsInVzZXJuYW1lIjoidG90byJ9.foun6ZZzojbCfoMkexySCgeG5nxyuNDk2s0OcpvGgTw");
                 return headers;
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         arrayobj.setTag("headerRequest");;
         requestQueue.add(arrayobj);}}
+
+*/
+
+
+public class DestinationActivity extends AppCompatActivity
+{
+    ListView results;
+    String JsonURL = "https://galerie-elise.com:8080/api/devices?limit=5";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_destination);
+        results = findViewById(R.id.jsonData);
+
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET,JsonURL,null,
+             new Response.Listener<JSONObject>()
+             {
+                 @Override
+                 public void onResponse(JSONObject response)
+                 {
+                     Log.v("Réception OK : ", "12345");
+                 }
+             },
+             new Response.ErrorListener()
+             {
+                 @Override
+                 public void onErrorResponse(VolleyError error)
+                 {
+                        Log.e("Pas de réception : ", "Error");
+                 }
+             }
+         )
+        {
+            @Override
+            public Map getHeaders() throws AuthFailureError {
+                HashMap headers = new HashMap();
+                headers.put("Content-Type", "application/json");
+                headers.put("Token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJsb3JhLWFwcC1zZXJ2ZXIiLCJleHAiOjE1NjA5NDE4ODcsImlzcyI6ImxvcmEtYXBwLXNlcnZlciIsIm5iZiI6MTU2MDg1NTQ4Nywic3ViIjoidXNlciIsInVzZXJuYW1lIjoidG90byJ9.LL3h-Yqe988tx3mU4-vIlz8wafYqIkgepJg7Fp7LfcY");
+                Log.v("Header",headers.toString());
+                return headers;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        req.setTag("headerRequest");
+        requestQueue.add(req);
+        Log.v("Requete",req.toString());
+    }
+}
