@@ -8,11 +8,9 @@ import android.util.Log;
 import android.widget.ListView;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -20,12 +18,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
+import java.time.Duration;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/*
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import java.time.LocalDateTime;
 
 public class DestinationActivity extends AppCompatActivity {
     // Will show the string "data" that holds the results
@@ -33,23 +43,55 @@ public class DestinationActivity extends AppCompatActivity {
     // URL of object to be parsed
     String JsonURL = "https://galerie-elise.com:8080/api/devices?limit=99";
 
-    // This string will hold the results
-    String data;
-
     // Defining the Volley request queue that handles the URL request concurrently
     RequestQueue requestQueue;
 
     List<DestinationClass> listDest = new ArrayList<DestinationClass>();
 
+    public static class SSLCerts {
+
+        public static void nuke() {
+            try {
+                TrustManager[] trustAllCerts = new TrustManager[] {
+                        new X509TrustManager() {
+                            public X509Certificate[] getAcceptedIssuers() {
+                                X509Certificate[] myTrustedAnchors = new X509Certificate[0];
+                                return myTrustedAnchors;
+                            }
+
+                            @Override
+                            public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+
+                            @Override
+                            public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+                        }
+                };
+
+                SSLContext sc = SSLContext.getInstance("SSL");
+                sc.init(null, trustAllCerts, new SecureRandom());
+                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+                HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+                    @Override
+                    public boolean verify(String arg0, SSLSession arg1) {
+                        return true;
+                    }
+                });
+            } catch (Exception e) {
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        SSLCerts.nuke();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_destination);
 
 
         // Casts results into the ListView found within the main layout XML with id jsonData
-        results = (ListView) findViewById(R.id.jsonData);
+        results = findViewById(R.id.jsonData);
         JSONObject jsonObj = new JSONObject();
 
         // Creating the JsonArrayRequest class called arrayreq, passing the required parameters
@@ -77,13 +119,29 @@ public class DestinationActivity extends AppCompatActivity {
                                 //gets each JSON object within the JSON array
                                 JSONObject jsonObject = tab.getJSONObject(i);
 
-                                room = !jsonObject.isNull("room") ? jsonObject.getString("room") : "";
-                                etat = !jsonObject.isNull("etat") ? jsonObject.getString("etat") : "";
+                                room = !jsonObject.isNull("name") ? jsonObject.getString("name") : "";
 
-                                DestinationClass dest = new DestinationClass(room, etat);
-                                listDest.add(dest);
-                                Log.d("ROOM :",": "+ room);
-                                Log.d("ETAT :",": "+ etat);
+                                if(room.contains("Room"))
+                                {
+                                    Long period = -1l;
+
+                                    if(!jsonObject.isNull("lastSeenAt"))
+                                    {
+                                        etat = jsonObject.getString("lastSeenAt").substring(0,23);
+
+                                        LocalDateTime now = java.time.LocalDateTime.now();
+                                        LocalDateTime lastview = LocalDateTime.parse(etat);
+                                        period = Duration.between(lastview, now).getSeconds();
+
+                                        // System.out.println("Room " + room);
+                                        // System.out.println("Dernière vue: " + date);
+                                        // System.out.println("Temps courant: " + now);
+                                        // System.out.println("Période: " + d.getSeconds());
+                                    }
+
+                                    DestinationClass dest = new DestinationClass(room, period);
+                                    listDest.add(dest);
+                                }
                             }
 
                             // Adds the data string to the TextView "results"
@@ -115,60 +173,11 @@ public class DestinationActivity extends AppCompatActivity {
             @Override
             public Map getHeaders() throws AuthFailureError {
                 HashMap headers = new HashMap();
-                //headers.put("Accept", "application/json");
-                //headers.put("Grpc-Metadata-Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJsb3JhLWFwcC1zZXJ2ZXIiLCJleHAiOjE1NjA4NjA0MzUsImlzcyI6ImxvcmEtYXBwLXNlcnZlciIsIm5iZiI6MTU2MDc3NDAzNSwic3ViIjoidXNlciIsInVzZXJuYW1lIjoidG90byJ9.foun6ZZzojbCfoMkexySCgeG5nxyuNDk2s0OcpvGgTw");
+                headers.put("Content-Type", "application/json");
+                headers.put("Grpc-Metadata-Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJsb3JhLWFwcC1zZXJ2ZXIiLCJleHAiOjE5OTUzMTc4NzgsImlzcyI6ImxvcmEtYXBwLXNlcnZlciIsIm5iZiI6MTU1NTIzMTQ3OCwic3ViIjoidXNlciIsInVzZXJuYW1lIjoidG90byJ9.Ytis78Tj39hPXWAYB9h2Lol5IBbOAFAT-UXyKNWKR-E");
                 return headers;
             }
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        arrayobj.setTag("headerRequest");;
+        arrayobj.setTag("headerRequest");
         requestQueue.add(arrayobj);}}
-
-*/
-
-
-public class DestinationActivity extends AppCompatActivity
-{
-    ListView results;
-    String JsonURL = "https://galerie-elise.com:8080/api/devices?limit=5";
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_destination);
-        results = findViewById(R.id.jsonData);
-
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET,JsonURL,null,
-             new Response.Listener<JSONObject>()
-             {
-                 @Override
-                 public void onResponse(JSONObject response)
-                 {
-                     Log.v("Réception OK : ", "12345");
-                 }
-             },
-             new Response.ErrorListener()
-             {
-                 @Override
-                 public void onErrorResponse(VolleyError error)
-                 {
-                        Log.e("Pas de réception : ", "Error");
-                 }
-             }
-         )
-        {
-            @Override
-            public Map getHeaders() throws AuthFailureError {
-                HashMap headers = new HashMap();
-                headers.put("Content-Type", "application/json");
-                headers.put("Token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJsb3JhLWFwcC1zZXJ2ZXIiLCJleHAiOjE1NjA5NDE4ODcsImlzcyI6ImxvcmEtYXBwLXNlcnZlciIsIm5iZiI6MTU2MDg1NTQ4Nywic3ViIjoidXNlciIsInVzZXJuYW1lIjoidG90byJ9.LL3h-Yqe988tx3mU4-vIlz8wafYqIkgepJg7Fp7LfcY");
-                Log.v("Header",headers.toString());
-                return headers;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        req.setTag("headerRequest");
-        requestQueue.add(req);
-        Log.v("Requete",req.toString());
-    }
-}
